@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import Spinner from '../Spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelServices';
   
 import './randomChar.scss';
@@ -17,36 +18,48 @@ class RandomChar extends Component {
     //    homepage: null,
     //    wiki: null
         char: {},
-        loading: true
+        loading: true,
+        error: false
     }
 
      marvelService = new MarvelService();//Этим действием создаем новое свойство
 
     onCharLoaded = (char) => {
         this.setState({
-                    char, 
-                    loading: false
-                    })
+            char, 
+            loading: false
+        })
+    }
+
+    onError = () => {
+        this.setState({ 
+            loading: false,
+            error: true
+        })
     }
 
     updateChar = () => {//Для получения рандомного героя 
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);//Рандомайзер
         this.marvelService
             .getCharacter(id)
-            .then(this.onCharLoaded)//получаем данные при помощи кода, что в MarbelServices
-            
+            .then(this.onCharLoaded)//Получаем данные при помощи кода, что в MarbelServices
+            .catch(this.onError);//Ловим ошибку и срабатывает функция onError
     }
     
     render() {//В этой части логика
-        const {char, loading} = this.state;//Из свойства char мы вытаскиваем нужные нам свойства именно в данной функции, в другом месте можем вытащить другие свойства
-        
+        const {char, loading, error} = this.state;//Из свойства char мы вытаскиваем нужные нам свойства именно в данной функции, в другом месте можем вытащить другие свойства
+        const errorMessage = error ? <ErrorMessage/> : null;//Создаем здесь условия, чтобы не засорять верстку, а так, данную логику разрешено размещать в верстке
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error) ? <View char={char}/> : null;
 //        if (loading) {
 //            return <Spinner/>
 //        }
         
         return (
             <div className="randomchar">
-                {loading ? <Spinner/> : <View char={char}/>}
+                {errorMessage}
+                {spinner}
+                {content}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!<br/>
