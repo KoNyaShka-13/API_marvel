@@ -1,8 +1,8 @@
 import { Component } from 'react';
+import Spinner from '../Spinner/Spinner';
 import MarvelService from '../../services/MarvelServices';
   
 import './randomChar.scss';
-
 import mjolnir from '../../resources/img/mjolnir.png';
 
 class RandomChar extends Component {
@@ -16,44 +16,37 @@ class RandomChar extends Component {
     //    thumbnail: null,
     //    homepage: null,
     //    wiki: null
-        char: {}
+        char: {},
+        loading: true
     }
 
      marvelService = new MarvelService();//Этим действием создаем новое свойство
 
-    onChatLoaded = (char) => {
-        this.setState({char : char})
+    onCharLoaded = (char) => {
+        this.setState({
+                    char, 
+                    loading: false
+                    })
     }
 
     updateChar = () => {//Для получения рандомного героя 
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);//Рандомайзер
         this.marvelService
             .getCharacter(id)
-            .then(this.onChatLoaded)//получаем данные при помощи кода, что в MarbelServices
+            .then(this.onCharLoaded)//получаем данные при помощи кода, что в MarbelServices
             
     }
     
-    render() {
-        const {char: {name, description, thumbnail, homepage, wiki}} = this.state;//Из свойства char мы вытаскиваем нужные нам свойства именно в данной функции, в другом месте можем вытащить другие свойства
+    render() {//В этой части логика
+        const {char, loading} = this.state;//Из свойства char мы вытаскиваем нужные нам свойства именно в данной функции, в другом месте можем вытащить другие свойства
+        
+//        if (loading) {
+//            return <Spinner/>
+//        }
+        
         return (
             <div className="randomchar">
-                <div className="randomchar__block">
-                    <img src={thumbnail} alt="Random character" className="randomchar__img"/>
-                    <div className="randomchar__info">
-                        <p className="randomchar__name">{name}</p>
-                        <p className="randomchar__descr">
-                            {description}
-                        </p>
-                        <div className="randomchar__btns">
-                            <a href={homepage} className="button button__main">
-                                <div className="inner">homepage</div>
-                            </a>
-                            <a href={wiki} className="button button__secondary">
-                                <div className="inner">Wiki</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                {loading ? <Spinner/> : <View char={char}/>}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!<br/>
@@ -70,6 +63,31 @@ class RandomChar extends Component {
             </div>
         )
     }
+}
+
+const View = ({char}) => {//В этой части загрузка 
+    const {name, description, thumbnail, homepage, wiki} = char;
+
+
+    return (
+        <div className="randomchar__block">
+            <img src={thumbnail} alt="Random character" className="randomchar__img"/>
+            <div className="randomchar__info">
+                <p className="randomchar__name">{name}</p>
+                <p className="randomchar__descr">
+                    {description}
+                </p>
+                <div className="randomchar__btns">
+                    <a href={homepage} className="button button__main">
+                        <div className="inner">homepage</div>
+                    </a>
+                    <a href={wiki} className="button button__secondary">
+                        <div className="inner">Wiki</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default RandomChar;
