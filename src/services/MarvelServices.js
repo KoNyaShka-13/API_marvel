@@ -25,6 +25,7 @@ _apiKey = 'apikey=ea2364b682f4916e26a6de922b3ca993'
 
     _transformCharacter = (char) => {//Перекинули метод сюда, так как он будет много где применяться
         return {
+            id: char.id,
             name: char.name,
             description: char.description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',//Доп инфа, если не будет у самой карточки
             thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
