@@ -1,6 +1,7 @@
 class MarvelService {
 _apiBase = 'https://gateway.marvel.com:443/v1/public/';//Оптимизируем ссылки, так как мы часто будем их использовать и код часто повторяется, легче повторяющиеся куски кода вынести, но ссылки тогда будут динамическими и нужно использовать ``
-_apiKey = 'apikey=ea2364b682f4916e26a6de922b3ca993'
+_apiKey = 'apikey=ea2364b682f4916e26a6de922b3ca993';
+_baseOffset = 210;//Базовый отступ для персонажей
 
 
     getResource = async (url) => {
@@ -13,8 +14,8 @@ _apiKey = 'apikey=ea2364b682f4916e26a6de922b3ca993'
         return await res.json();
     }
 
-    getAllCharacters = async () => {//Получаем сразу всех персонажей, в ссылке, указанной ниже можно изменять некоторые параметры, к примеру такие, как количество показываемых карточек и лимит
-        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=210&${this._apiKey}`);//Пример оптимизации кода
+    getAllCharacters = async (offset = this._baseOffset) => {//Получаем сразу всех персонажей, в ссылке, указанной ниже можно изменять некоторые параметры, к примеру такие, как количество показываемых карточек и лимит
+        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`);//Пример оптимизации кода
         return res.data.results.map(this._transformCharacter);
     }
 
